@@ -1,6 +1,14 @@
 # ChainVault
 
+**中文** | [English](README.en.md)
+
 多链数字货币充提网关开源版 —— 对标 [UDUN](https://www.udun.io/) 的商户充提解决方案，支持充值地址分配、链上监听、提币、Webhook 回调、热钱包归集与运营管理后台。
+
+<p align="center">
+  <img src="images/screenshot-20260607-205730.png" alt="ChainVault 运营后台 · 数据总览" width="920"/>
+  <br/>
+  <sub>Vue 3 运营后台 · 数据总览</sub>
+</p>
 
 ## 功能概览
 
@@ -14,6 +22,38 @@
 | **密钥管理** | BIP44 HD 派生、助记词 AES 加密、多链地址生成与离线签名校验 |
 
 **开源版支持链：** ETH、BNB Chain、TRON、BTC（及链上 USDT 等代币）
+
+## 界面预览
+
+### 商户 API 文档
+
+后台内置 Gateway 对接说明：Base Path、MD5 签名规则、请求头与示例，支持一键复制 Gateway 地址、下载 Markdown。
+
+![商户 API 文档](images/screenshot-20260607-205743.png)
+
+### 热钱包余额
+
+按商户 + 链 + 币种查看可用/冻结余额，支持从后台触发单币种归集。
+
+![热钱包余额](images/screenshot-20260607-205824.png)
+
+### 归集历史
+
+批次号、触发方式（定时扫描 / Admin 手动）、成功/失败/跳过统计与详情，归集过程可追溯。
+
+![归集历史](images/screenshot-20260607-205834.png)
+
+### 归集配置
+
+全局定时扫描开关、阈值倍数（归集阈值 = 最小充值 × 倍数），以及 ETH / BNB / TRON 各币种独立阈值。
+
+![归集配置](images/screenshot-20260607-205607.png)
+
+<p align="center">
+  <img src="images/screenshot-20260607-205844.png" alt="归集配置 · 分币种阈值列表" width="920"/>
+  <br/>
+  <sub>分币种归集阈值 · ETH / BNB / TRON</sub>
+</p>
 
 ## 技术栈
 
@@ -29,6 +69,7 @@
 ```
 chainvault/
 ├── README.md
+├── README.en.md
 ├── backend/
 │   ├── code/                    # Maven 多模块源码
 │   │   ├── chainvault-common/   # 公共工具、枚举、异常
@@ -183,9 +224,11 @@ Webhook 回调使用 **HMAC-SHA256**。详见 [backend/docs/API.md](backend/docs
 用户链上转账 → Gateway 扫块匹配地址 → 写入 transaction_record（处理中）
                 ↓
 确认数达标 → 状态成功 → Webhook deposit.confirmed
+                ↓
+（可选）达归集阈值 → 热钱包归集 → 归集历史可查
 ```
 
-支付下单**不会**直接产生充值记录，只有链上到账且扫块匹配后才会入账。
+支付下单**不会**直接产生充值记录，只有链上到账且扫块匹配后才会入账。归集可在后台配置阈值与定时任务，见上方「归集配置」截图。
 
 ## 服务端口
 
