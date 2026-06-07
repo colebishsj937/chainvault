@@ -224,6 +224,10 @@ Webhook 回调使用 **HMAC-SHA256**。详见 [backend/docs/API.md](backend/docs
 
 本项目为 ChainVault 开源版。商业扩展（更多链、风控、KYC、多签审批等）不在本仓库范围内。
 
+## 联系方式
+
+- Telegram：[@maotouying_cc](https://t.me/maotouying_cc)
+
 ## 仓库
 
 https://github.com/colebishsj937/chainvault
