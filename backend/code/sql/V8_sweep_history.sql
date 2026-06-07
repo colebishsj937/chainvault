@@ -1,0 +1,65 @@
+-- 阶段：归集历史（批次 + 明细）
+-- 使用方式: docker exec -i chainvault-mysql mysql -u chainvault -pchainvault_dev chainvault < V8_sweep_history.sql
+
+SET NAMES utf8mb4;
+
+CREATE TABLE IF NOT EXISTS sweep_batch (
+    id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    batch_no        VARCHAR(32)    NOT NULL UNIQUE COMMENT '批次号',
+    merchant_id     VARCHAR(32)    NULL COMMENT 'NULL=全平台扫描',
+    chain_code      VARCHAR(20)    NULL COMMENT 'NULL=多链',
+    coin_type       VARCHAR(20)    NULL COMMENT 'NULL=多币种',
+    trigger_type    TINYINT        NOT NULL COMMENT '1=定时 2=Admin手动 3=Admin批次重试 4=商户API',
+    trigger_by      VARCHAR(64)    NULL COMMENT '操作人或 system',
+    status          TINYINT        NOT NULL DEFAULT 1 COMMENT '0=已创建 1=执行中 2=完成 3=部分失败 4=全部失败 5=已取消',
+    scanned_count   INT            NOT NULL DEFAULT 0,
+    queued_count    INT            NOT NULL DEFAULT 0,
+    success_count   INT            NOT NULL DEFAULT 0,
+    failed_count    INT            NOT NULL DEFAULT 0,
+    skipped_count   INT            NOT NULL DEFAULT 0,
+    remark          VARCHAR(256)   NULL,
+    created_at      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    completed_at    DATETIME       NULL,
+    INDEX idx_merchant_created (merchant_id, created_at),
+    INDEX idx_status_created (status, created_at)
+) COMMENT='归集批次';
+
+CREATE TABLE IF NOT EXISTS sweep_record (
+    id                  BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    record_no           VARCHAR(32)    NOT NULL UNIQUE COMMENT '明细号',
+    batch_id            BIGINT UNSIGNED NOT NULL,
+    parent_record_id    BIGINT UNSIGNED NULL COMMENT '重试来源明细',
+    retry_seq           INT            NOT NULL DEFAULT 0 COMMENT '0=首次',
+    merchant_id         VARCHAR(32)    NOT NULL,
+    coin_type           VARCHAR(20)    NOT NULL,
+    chain_code          VARCHAR(20)    NOT NULL,
+    deposit_address_id  BIGINT UNSIGNED NULL,
+    from_address        VARCHAR(128)   NOT NULL,
+    to_address          VARCHAR(128)   NULL COMMENT '热钱包地址，跳过时可为空',
+    bip44_path          VARCHAR(64)    NULL,
+    amount              DECIMAL(36,18) NOT NULL,
+    threshold_snapshot  DECIMAL(36,18) NOT NULL,
+    pending_snapshot    DECIMAL(36,18) NOT NULL,
+    status              TINYINT        NOT NULL COMMENT '1=已入队 2=广播中 3=确认中 4=成功 5=失败 6=跳过',
+    trade_id            VARCHAR(32)    NULL,
+    tx_hash             VARCHAR(128)   NULL,
+    block_number        BIGINT UNSIGNED NULL,
+    confirms            INT            NOT NULL DEFAULT 0,
+    required_confirms   INT            NOT NULL DEFAULT 12,
+    error_code          VARCHAR(32)    NULL,
+    error_message       VARCHAR(512)   NULL,
+    queued_at           DATETIME       NULL,
+    broadcast_at        DATETIME       NULL,
+    confirmed_at        DATETIME       NULL,
+    failed_at           DATETIME       NULL,
+    created_at          DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_batch (batch_id),
+    INDEX idx_merchant_status (merchant_id, status),
+    INDEX idx_from_address (chain_code, from_address),
+    INDEX idx_status_updated (status, updated_at),
+    INDEX idx_tx_hash (tx_hash),
+    INDEX idx_parent (parent_record_id),
+    CONSTRAINT fk_sweep_record_batch FOREIGN KEY (batch_id) REFERENCES sweep_batch(id)
+) COMMENT='归集地址明细';

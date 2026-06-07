@@ -1,0 +1,36 @@
+# IDE & OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Cursor / agent
+.cursor/
+AGENTS.md
+
+# Java
+target/
+*.class
+*.jar
+!**/src/main/**
+!**/src/test/**
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+npm-debug.log*
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+*.tsbuildinfo
+.eslintcache

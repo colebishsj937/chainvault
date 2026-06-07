@@ -1,0 +1,83 @@
+spring:
+  application:
+    name: chainvault-gateway
+  datasource:
+    url: jdbc:mysql://127.0.0.1:${DB_PORT:3307}/chainvault?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: ${DB_USER:chainvault}
+    password: ${DB_PASS:chainvault_dev}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASS:}
+      lettuce:
+        pool:
+          max-active: 16
+
+server:
+  port: 8080
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+chainvault:
+  scan-enabled: true
+  scan-batch-size: 50
+  scan-parallel-enabled: true
+  scan-parallel-threads: 4
+  broadcast-simulate: true
+  rpc-proxy:
+    enabled: ${RPC_PROXY_ENABLED:false}
+    host: ${RPC_PROXY_HOST:127.0.0.1}
+    port: ${RPC_PROXY_PORT:7897}
+    username: ${RPC_PROXY_USER:}
+    password: ${RPC_PROXY_PASS:}
+  sweep-enabled: true
+  sweep-threshold-multiplier: 5
+  webhook-timeout-ms: 10000
+  gateway:
+    sign-enabled: true
+    rate-limit-enabled: true
+    rate-limit-window-seconds: 60
+    rate-limit-max-requests: 200
+    public-paths:
+      - /actuator
+      - /api/v1/system
+  keyvault:
+    master-key-source: env
+    encrypt-key: ${MASTER_ENCRYPT_KEY:dev-only-32bytes-encrypt-key!!}
+  eth:
+    rpc-url: ${ETH_RPC_URL:}
+    required-confirms: 12
+  bnb:
+    rpc-url: ${BNB_RPC_URL:}
+    required-confirms: 15
+  tron:
+    api-url: https://api.trongrid.io
+    api-key: ${TRON_API_KEY:}
+    required-confirms: 20
+  btc:
+    rpc-url: ${BTC_RPC_URL:}
+    rpc-user: ${BTC_RPC_USER:}
+    rpc-password: ${BTC_RPC_PASSWORD:}
+    required-confirms: 6
+
+logging:
+  level:
+    com.chainvault: DEBUG
+    com.baomidou.mybatisplus: WARN

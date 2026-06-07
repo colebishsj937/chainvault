@@ -1,0 +1,2 @@
+# SDKMAN Java 版本锁定，进入目录后执行: sdk env
+java=21.0.5-tem

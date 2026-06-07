@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.chainvault</groupId>
+        <artifactId>chainvault-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>chainvault-core</artifactId>
+    <name>ChainVault Core</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.chainvault</groupId>
+            <artifactId>chainvault-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.chainvault</groupId>
+            <artifactId>chainvault-keyvault</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.chainvault</groupId>
+            <artifactId>chainvault-chainnode</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+        </dependency>
+    </dependencies>
+</project>
